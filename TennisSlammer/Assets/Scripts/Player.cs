@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     [Header("Movement")]
     public float MovementSpeed = 17;
     public float RotationSpeed = 160;
+    public float JumpHeight = 5;
 
     [Header("Ball Hitting")]
     public Transform AimPos;
@@ -18,7 +19,7 @@ public class Player : MonoBehaviour
 
     private Vector2 _rotateInput, _input;
     private Vector3 _moveVector;
-    private float _verticalVel, _gravity = 12;
+    private float _verticalVel, _gravity = 12, _isJumpingValue;
     private CharacterController _characterController;
     private void OnRotate(InputValue value)
     {
@@ -27,6 +28,10 @@ public class Player : MonoBehaviour
     private void OnMove(InputValue value)
     {
         _input = value.Get<Vector2>();
+    }
+    private void OnJump(InputValue value)
+    {
+        _isJumpingValue = value.Get<float>();   
     }
     void Start()
     {
@@ -53,10 +58,10 @@ public class Player : MonoBehaviour
         {
             _verticalVel = -0.5f;
         }
-        //if (_characterController.isGrounded && _isJumpingValue == 1) //Jump
-        //{
-        //    _verticalVel = JumpHeight;
-        //}
+        if (_characterController.isGrounded && _isJumpingValue == 1) //Jump
+        {
+            _verticalVel = JumpHeight;
+        }
         else
         {
             _verticalVel -= _gravity * Time.deltaTime;
