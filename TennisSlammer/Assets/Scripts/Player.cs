@@ -17,8 +17,12 @@ public class Player : MonoBehaviour
     public float HitForce = 13;
     public float UpForce = 6;
 
+    [Header("Aiming")]
+    public LayerMask layerMask;
+    public GameObject currentTarget = null;
+
     private Vector2 _rotateInput, _input;
-    private Vector3 _moveVector;
+    private Vector3 _moveVector, _inputDirection;
     private float _verticalVel, _gravity = 12, _isJumpingValue;
     private CharacterController _characterController;
     private void OnRotate(InputValue value)
@@ -43,6 +47,20 @@ public class Player : MonoBehaviour
     {
         Rotate();
         Movement();
+
+        _inputDirection = Camera.main.transform.forward * _input.y + Camera.main.transform.right * _input.x;
+        _inputDirection = _inputDirection.normalized;
+        RaycastHit info;
+
+        if (Physics.SphereCast(transform.position, 3f, transform.forward, out info, 70, layerMask))
+        {
+            if (info.collider.gameObject.tag == "Enemy")
+            {
+                currentTarget = info.collider.gameObject;
+                AimPos = currentTarget.transform;
+                info.collider.gameObject.GetComponent<Enemy>().IsCurrentTarget = true;
+            }
+        }
     }
     private void Rotate()
     {
@@ -68,5 +86,14 @@ public class Player : MonoBehaviour
         }
 
         _characterController.Move(_moveVector * Time.deltaTime);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.black;
+        Gizmos.DrawRay(transform.position, _inputDirection);
+        Gizmos.DrawWireSphere(transform.position, 2);
+        if (currentTarget != null)
+            Gizmos.DrawSphere(currentTarget.transform.position, 5);
     }
 }

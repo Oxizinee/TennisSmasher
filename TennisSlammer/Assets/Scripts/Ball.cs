@@ -5,7 +5,6 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     // Start is called before the first frame update
-    private LineRenderer _lineRenderer;
     void Start()
     {
     }
