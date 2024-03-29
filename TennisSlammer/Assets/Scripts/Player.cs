@@ -8,7 +8,13 @@ using UnityEngine.Windows;
 public class Player : MonoBehaviour
 {
     [Header("Movement")]
-    public float MovementSpeed, RotationSpeed;
+    public float MovementSpeed = 17;
+    public float RotationSpeed = 160;
+
+    [Header("Ball Hitting")]
+    public Transform AimPos;
+    public float HitForce = 13;
+    public float UpForce = 6;
 
     private Vector2 _rotateInput, _input;
     private Vector3 _moveVector;
