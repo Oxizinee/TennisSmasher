@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
-
+using Cinemachine;
 public class PlayerManualTarget : MonoBehaviour
 {
     [Header("Movement")]
@@ -18,16 +18,19 @@ public class PlayerManualTarget : MonoBehaviour
     public float UpForce = 6;
 
     [Header("Aiming")]
-    public GameObject cinemaCam;
+   public CinemachineTargetGroup cinemaCam;
+    public GameObject secondCam;
+    public GameObject cam;
     public LayerMask layerMask;
     public GameObject currentTarget = null;
     public int currentAim = 0;
 
     public List<GameObject> Enemies;
 
+    private bool _isFocusedOnTarget;
     private Vector2 _rotateInput, _input;
     private Vector3 _moveVector, _inputDirection;
-    private float _verticalVel, _gravity = 12, _isJumpingValue;
+    private float _verticalVel, _gravity = 12, _isJumpingValue, _isSwitchingTargetValue;
     private CharacterController _characterController;
     private void OnRotate(InputValue value)
     {
@@ -41,11 +44,25 @@ public class PlayerManualTarget : MonoBehaviour
     {
         _isJumpingValue = value.Get<float>();   
     }
+    private void OnTurnTarget()
+    {
+        _isFocusedOnTarget = !_isFocusedOnTarget;
+    }
+
+    private void OnSwitchTarget(InputValue value)
+    {
+        //_isSwitchingTargetValue = value.Get<float>();
+        currentAim++;
+        if (currentAim > Enemies.Count)
+        {
+            currentAim = 0;
+        }
+    }
     void Start()
     {
         _characterController = GetComponent<CharacterController>();
         Enemies = new List<GameObject>();
-        //currentTarget = Enemies[currentAim];
+        secondCam.SetActive(false);
     }
 
     // Update is called once per frame
@@ -54,34 +71,60 @@ public class PlayerManualTarget : MonoBehaviour
         Rotate();
         Movement();
 
+        RaycastHit info;
         _inputDirection = Camera.main.transform.forward * _input.y + Camera.main.transform.right * _input.x;
 
-        if (UnityEngine.Input.GetKeyDown(KeyCode.P))
+        if(Enemies.Count > 0 && _isFocusedOnTarget)
         {
-            currentAim++;
-            if(currentAim > Enemies.Count) 
-            {
-                currentAim = 0;
-            }
+            SwitchCameras(false);
         }
-        if(Enemies.Count > 0) 
+        else if(!_isFocusedOnTarget)
+        {
+            SwitchCameras(true);
+        }
+
+        if (Enemies.Count > 0 && secondCam.activeSelf == true) 
         {
             currentTarget = Enemies[currentAim];
-            cinemaCam.cinema
+            currentTarget.GetComponent<Enemy>().IsCurrentTarget = true;
             AimPos = currentTarget.transform;
-            Camera.main.transform.LookAt(currentTarget.transform);
+
+            cinemaCam.m_Targets[1].target = currentTarget.transform;
+            cinemaCam.m_Targets[1].weight = 1;
+            cinemaCam.m_Targets[1].radius = 4;
         }
-        
+
+        if(Enemies.Count == 0 && secondCam.activeSelf == true)
+        {
+            SwitchCameras(true);
+        }
+
+
+        //Find targets with normal cam
+        if (cam.activeSelf == true &&  Physics.SphereCast(transform.position, 3f, cam.transform.forward, out info, 50, layerMask))
+        {
+            if (info.collider.gameObject.tag == "Enemy")
+            {
+                currentTarget = info.collider.gameObject;
+                AimPos = currentTarget.transform;
+                info.collider.gameObject.GetComponent<Enemy>().IsCurrentTarget = true;
+            }
+        }
+    }
+
+    private void SwitchCameras(bool firstCamBool)
+    {
+        cam.SetActive(firstCamBool);
+        secondCam.SetActive(!firstCamBool);
     }
     private void Rotate()
     {
-        //transform.Rotate(0, _rotateInput.x * RotationSpeed * Time.deltaTime, 0);
-        if(currentTarget != null) 
-        {
-            Camera.main.transform.RotateAround(currentTarget.transform.position, Vector3.up, _rotateInput.x * RotationSpeed * Time.deltaTime);
-        }
-        else
         Camera.main.transform.RotateAround(transform.position, Vector3.up, _rotateInput.x * RotationSpeed * Time.deltaTime);
+
+        if(secondCam.activeSelf == true) 
+        {
+            transform.Rotate(Vector3.up, _rotateInput.x * RotationSpeed * Time.deltaTime);
+        }
     }
 
     private void Movement()
