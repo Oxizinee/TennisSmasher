@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour
     private float _timer;
     private MeshRenderer _render;
     private Material _deafultMat;
+    private PlayerManualTarget _playerScript;
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Ball")
@@ -28,6 +29,7 @@ public class Enemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _playerScript = FindObjectOfType<PlayerManualTarget>();
         _render = GetComponent<MeshRenderer>();
         _deafultMat = _render.sharedMaterial;
     }
@@ -53,6 +55,7 @@ public class Enemy : MonoBehaviour
 
         if (Health == 0)
         {
+            _playerScript.Enemies.Remove(this.gameObject);
             Destroy(gameObject);
         }
     }

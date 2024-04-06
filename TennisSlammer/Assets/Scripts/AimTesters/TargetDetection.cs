@@ -11,10 +11,7 @@ public class TargetDetection : MonoBehaviour
         {
             _playerScript.Enemies.Add(other.gameObject);
         }
-        //if (other.gameObject == null)
-        //{
-        //    _playerScript.Enemies.Remove(other.gameObject);
-        //}
+       
     }
 
     private void OnTriggerExit(Collider other)
@@ -23,10 +20,7 @@ public class TargetDetection : MonoBehaviour
         {
             _playerScript.Enemies.Remove(other.gameObject);
         }
-        if (other.gameObject == null)
-        {
-            _playerScript.Enemies.Remove(other.gameObject);
-        }
+      
     }
 
     private void Start()
