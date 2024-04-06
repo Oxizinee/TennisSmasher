@@ -5,24 +5,24 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 
-public class Player : MonoBehaviour
+public class PlayerStraightAim : MonoBehaviour
 {
     [Header("Movement")]
+    public GameObject Cam;
     public float MovementSpeed = 17;
     public float RotationSpeed = 160;
+    public float CameraRotationSpeed = 50;
     public float JumpHeight = 5;
+
+    public float CamRot;
 
     [Header("Ball Hitting")]
     public Transform AimPos;
     public float HitForce = 13;
     public float UpForce = 6;
 
-    [Header("Aiming")]
-    public LayerMask layerMask;
-    public GameObject currentTarget = null;
-
     private Vector2 _rotateInput, _input;
-    private Vector3 _moveVector, _inputDirection;
+    private Vector3 _moveVector;
     private float _verticalVel, _gravity = 12, _isJumpingValue;
     private CharacterController _characterController;
     private void OnRotate(InputValue value)
@@ -47,36 +47,20 @@ public class Player : MonoBehaviour
     {
         Rotate();
         Movement();
-
-        _inputDirection = Camera.main.transform.forward * _input.y + Camera.main.transform.right * _input.x;
-       // _inputDirection = _inputDirection.normalized;
-
-        RaycastHit info;
-
-        if (Physics.SphereCast(transform.position, 3f, Camera.main.transform.forward, out info, 50, layerMask))
-        {
-            if (info.collider.gameObject.tag == "Enemy")
-            {
-                currentTarget = info.collider.gameObject;
-                AimPos = currentTarget.transform;
-                info.collider.gameObject.GetComponent<Enemy>().IsCurrentTarget = true;
-            }
-            else
-            {
-                currentTarget = null;
-            }
-        }
     }
     private void Rotate()
     {
-        //transform.Rotate(0, _rotateInput.x * RotationSpeed * Time.deltaTime, 0);
-        Camera.main.transform.RotateAround(transform.position, Vector3.up, _rotateInput.x * RotationSpeed * Time.deltaTime);
+        CamRot = _rotateInput.y * CameraRotationSpeed * Time.deltaTime;
+        float newRotationAngle = Cam.transform.rotation.eulerAngles.x - CamRot;
+        Cam.transform.localRotation = Quaternion.Euler(Mathf.Clamp(newRotationAngle, 0, 13), Cam.transform.localRotation.eulerAngles.y, Cam.transform.localRotation.eulerAngles.z);
+
+
+        transform.Rotate(0, _rotateInput.x * RotationSpeed * Time.deltaTime, 0);
     }
 
     private void Movement()
     {
-        _moveVector = _inputDirection * MovementSpeed;
-       // _moveVector = (transform.forward * _input.y + transform.right * _input.x) * MovementSpeed;
+        _moveVector = (transform.forward * _input.y + transform.right * _input.x) * MovementSpeed;
         _moveVector.y = _verticalVel;
 
         if (_characterController.isGrounded)

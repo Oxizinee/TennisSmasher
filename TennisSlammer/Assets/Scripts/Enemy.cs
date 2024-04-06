@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
     public float HitForce = 15;
     public float UpForce = 10;
     public float Distance = 10;
+    public int Health = 1;
 
     public bool IsCurrentTarget = false;
 
@@ -19,7 +20,7 @@ public class Enemy : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ball")
         {
-            Debug.Log("gksjkhgk");
+            Health--;
             Vector3 direction = (transform.position + (transform.forward * Distance))- transform.position;
             collision.gameObject.GetComponent<Rigidbody>().velocity = direction.normalized * HitForce + new Vector3(0, UpForce, 0);
         }
@@ -48,6 +49,11 @@ public class Enemy : MonoBehaviour
                 _timer = 0;
                 IsCurrentTarget = false;
             }
+        }
+
+        if (Health == 0)
+        {
+            Destroy(gameObject);
         }
     }
 }

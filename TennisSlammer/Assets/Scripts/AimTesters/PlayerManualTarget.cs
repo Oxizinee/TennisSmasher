@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 
-public class Player : MonoBehaviour
+public class PlayerManualTarget : MonoBehaviour
 {
     [Header("Movement")]
     public float MovementSpeed = 17;
@@ -18,8 +18,12 @@ public class Player : MonoBehaviour
     public float UpForce = 6;
 
     [Header("Aiming")]
+    public GameObject cinemaCam;
     public LayerMask layerMask;
     public GameObject currentTarget = null;
+    public int currentAim = 0;
+
+    public List<GameObject> Enemies;
 
     private Vector2 _rotateInput, _input;
     private Vector3 _moveVector, _inputDirection;
@@ -40,6 +44,8 @@ public class Player : MonoBehaviour
     void Start()
     {
         _characterController = GetComponent<CharacterController>();
+        Enemies = new List<GameObject>();
+        //currentTarget = Enemies[currentAim];
     }
 
     // Update is called once per frame
@@ -49,27 +55,32 @@ public class Player : MonoBehaviour
         Movement();
 
         _inputDirection = Camera.main.transform.forward * _input.y + Camera.main.transform.right * _input.x;
-       // _inputDirection = _inputDirection.normalized;
 
-        RaycastHit info;
-
-        if (Physics.SphereCast(transform.position, 3f, Camera.main.transform.forward, out info, 50, layerMask))
+        if (UnityEngine.Input.GetKeyDown(KeyCode.P))
         {
-            if (info.collider.gameObject.tag == "Enemy")
+            currentAim++;
+            if(currentAim > Enemies.Count) 
             {
-                currentTarget = info.collider.gameObject;
-                AimPos = currentTarget.transform;
-                info.collider.gameObject.GetComponent<Enemy>().IsCurrentTarget = true;
-            }
-            else
-            {
-                currentTarget = null;
+                currentAim = 0;
             }
         }
+        if(Enemies.Count > 0) 
+        {
+            currentTarget = Enemies[currentAim];
+            cinemaCam.cinema
+            AimPos = currentTarget.transform;
+            Camera.main.transform.LookAt(currentTarget.transform);
+        }
+        
     }
     private void Rotate()
     {
         //transform.Rotate(0, _rotateInput.x * RotationSpeed * Time.deltaTime, 0);
+        if(currentTarget != null) 
+        {
+            Camera.main.transform.RotateAround(currentTarget.transform.position, Vector3.up, _rotateInput.x * RotationSpeed * Time.deltaTime);
+        }
+        else
         Camera.main.transform.RotateAround(transform.position, Vector3.up, _rotateInput.x * RotationSpeed * Time.deltaTime);
     }
 

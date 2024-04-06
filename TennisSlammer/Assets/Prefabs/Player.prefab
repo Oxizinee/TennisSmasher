@@ -27,10 +27,11 @@ Transform:
   m_GameObject: {fileID: 80184220625397440}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.31, y: 0.68, z: 0}
+  m_LocalPosition: {x: 0.31, y: 0.79, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6609463255176645144}
   m_Father: {fileID: 7528469710516503644}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &858009213860082830
@@ -120,8 +121,8 @@ Transform:
   m_GameObject: {fileID: 1453728921762698170}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.05, y: 0.05, z: 0.95}
-  m_LocalScale: {x: 3.74, y: 2.75, z: 1}
+  m_LocalPosition: {x: 0.05, y: 0.21, z: 0.95}
+  m_LocalScale: {x: 3.74, y: 2.3620546, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7528469710516503644}
@@ -225,11 +226,11 @@ Transform:
   m_GameObject: {fileID: 4245030394654838575}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.79, z: 19.38}
+  m_LocalPosition: {x: -0.31, y: -1.5800002, z: 19.380001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7528469710516503644}
+  m_Father: {fileID: 5274309876714802288}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1860166957916933596
 MeshFilter:
@@ -334,11 +335,10 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 55.1, y: 2.86, z: 39.3}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5274309876714802288}
-  - {fileID: 6609463255176645144}
   - {fileID: 2213839207588284842}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -485,6 +485,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MovementSpeed: 17
   RotationSpeed: 160
+  JumpHeight: 5
   AimPos: {fileID: 0}
   HitForce: 5
-  UpForce: 6
+  UpForce: 4
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  currentTarget: {fileID: 0}
