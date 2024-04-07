@@ -7,16 +7,19 @@ public class Enemy : MonoBehaviour
     public float HitForce = 15;
     public float UpForce = 10;
     public float Distance = 10;
+    public float Speed;
     public int Health = 1;
 
     public bool IsCurrentTarget = false;
 
     public Material TargetMat;
+    public GameObject[] TargetIndicators;
 
     private float _timer;
     private MeshRenderer _render;
     private Material _deafultMat;
     private PlayerManualTarget _playerScript;
+    private GameObject _player;
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Ball")
@@ -30,8 +33,11 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         _playerScript = FindObjectOfType<PlayerManualTarget>();
+        _player = GameObject.FindGameObjectWithTag("Player");
         _render = GetComponent<MeshRenderer>();
         _deafultMat = _render.sharedMaterial;
+
+        Speed = Random.Range(2, 4);
     }
 
     // Update is called once per frame
@@ -40,6 +46,10 @@ public class Enemy : MonoBehaviour
         if (!IsCurrentTarget)
         {
             _render.sharedMaterial = _deafultMat;
+            foreach (GameObject go in TargetIndicators)
+            {
+                go.SetActive(false);
+            }
         }
         else
         {
@@ -57,6 +67,44 @@ public class Enemy : MonoBehaviour
         {
             _playerScript.Enemies.Remove(this.gameObject);
             Destroy(gameObject);
+        }
+
+        if (!isGrounded())
+        {
+            transform.position -= Vector3.up * 2 * Time.deltaTime;
+        }
+    }
+    private void LateUpdate()
+    {
+        if(isGrounded() && !PlayerTooFar()) 
+        {
+            Vector3 targetPos =  _player.transform.position - transform.position ;
+            targetPos.Normalize();
+            transform.Translate(targetPos * Speed * Time.deltaTime);
+        }
+    }
+    private bool isGrounded()
+    {
+        Debug.DrawRay(new Vector3(transform.position.x, transform.position.y - (transform.localScale.y / 2), transform.position.z), -Vector3.up, Color.red);
+        if (Physics.Raycast(new Vector3(transform.position.x, transform.position.y - (transform.localScale.y / 2), transform.position.z), -Vector3.up, 0.4f))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private bool PlayerTooFar()
+    {
+        if (Vector3.Distance(_player.transform.position,transform.position) > 25)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }

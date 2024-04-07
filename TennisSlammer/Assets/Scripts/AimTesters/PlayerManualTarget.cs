@@ -5,8 +5,15 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 using Cinemachine;
+using System.Linq;
 public class PlayerManualTarget : MonoBehaviour
 {
+    [Header("Cameras")]
+    public CinemachineVirtualCamera ThirdPersonCam;
+    public CinemachineVirtualCamera TargetCam;
+    public CinemachineTargetGroup TargetGroupCam;
+    [SerializeField] private bool _firstCamActive = true;
+
     [Header("Movement")]
     public float MovementSpeed = 17;
     public float RotationSpeed = 160;
@@ -14,23 +21,23 @@ public class PlayerManualTarget : MonoBehaviour
 
     [Header("Ball Hitting")]
     public Transform AimPos;
+    public Transform AimObject;
     public float HitForce = 13;
     public float UpForce = 6;
 
     [Header("Aiming")]
-   public CinemachineTargetGroup cinemaCam;
-    public GameObject secondCam;
     public GameObject cam;
     public LayerMask layerMask;
     public GameObject currentTarget = null;
     public int currentAim = 0;
+    public float TransitionDuration = 2;
 
     public List<GameObject> Enemies;
 
     private bool _isFocusedOnTarget;
     private Vector2 _rotateInput, _input;
     private Vector3 _moveVector, _inputDirection;
-    private float _verticalVel, _gravity = 12, _isJumpingValue, _isSwitchingTargetValue;
+    private float _verticalVel, _gravity = 12, _isJumpingValue;
     private CharacterController _characterController;
     private void OnRotate(InputValue value)
     {
@@ -46,12 +53,11 @@ public class PlayerManualTarget : MonoBehaviour
     }
     private void OnTurnTarget()
     {
+        if(Enemies.Count > 0) 
         _isFocusedOnTarget = !_isFocusedOnTarget;
     }
-
     private void OnSwitchTarget(InputValue value)
     {
-        //_isSwitchingTargetValue = value.Get<float>();
         currentAim++;
         if (currentAim > Enemies.Count)
         {
@@ -62,7 +68,8 @@ public class PlayerManualTarget : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         Enemies = new List<GameObject>();
-        secondCam.SetActive(false);
+        TargetCam.Priority = 0;
+
     }
 
     // Update is called once per frame
@@ -71,37 +78,57 @@ public class PlayerManualTarget : MonoBehaviour
         Rotate();
         Movement();
 
-        RaycastHit info;
         _inputDirection = Camera.main.transform.forward * _input.y + Camera.main.transform.right * _input.x;
 
-        if(Enemies.Count > 0 && _isFocusedOnTarget)
+        if(_isFocusedOnTarget)
         {
             SwitchCameras(false);
         }
-        else if(!_isFocusedOnTarget)
+        else
         {
             SwitchCameras(true);
         }
 
-        if (Enemies.Count > 0 && secondCam.activeSelf == true) 
+        if (Enemies.Count <= 0)
         {
-            currentTarget = Enemies[currentAim];
-            currentTarget.GetComponent<Enemy>().IsCurrentTarget = true;
-            AimPos = currentTarget.transform;
-
-            cinemaCam.m_Targets[1].target = currentTarget.transform;
-            cinemaCam.m_Targets[1].weight = 1;
-            cinemaCam.m_Targets[1].radius = 4;
-        }
-
-        if(Enemies.Count == 0 && secondCam.activeSelf == true)
-        {
-            SwitchCameras(true);
+            _isFocusedOnTarget = false;
+            AimPos = AimObject.transform;
         }
 
 
-        //Find targets with normal cam
-        if (cam.activeSelf == true &&  Physics.SphereCast(transform.position, 3f, cam.transform.forward, out info, 50, layerMask))
+        if (_firstCamActive)
+        {
+            FirstCamBehaviour();
+        }
+        else
+        {
+            SecondCamBehaviour();
+        }
+
+
+    }
+
+    private void SecondCamBehaviour()
+    {
+        currentTarget = Enemies[currentAim];
+        currentTarget.GetComponent<Enemy>().IsCurrentTarget = true;
+        foreach (GameObject go in currentTarget.GetComponent<Enemy>().TargetIndicators)
+        {
+            go.SetActive(true);
+        }
+
+        AimPos = currentTarget.transform;
+
+        TargetGroupCam.m_Targets[1].target = currentTarget.transform;
+        TargetGroupCam.m_Targets[1].weight = 1;
+        TargetGroupCam.m_Targets[1].radius = 4;
+    }
+
+    private void FirstCamBehaviour()
+    {
+        RaycastHit info;
+
+        if (Physics.SphereCast(transform.position, 3f, cam.transform.forward, out info, 50, layerMask))
         {
             if (info.collider.gameObject.tag == "Enemy")
             {
@@ -114,17 +141,23 @@ public class PlayerManualTarget : MonoBehaviour
 
     private void SwitchCameras(bool firstCamBool)
     {
-        cam.SetActive(firstCamBool);
-        secondCam.SetActive(!firstCamBool);
+        _firstCamActive = firstCamBool;
+        if(firstCamBool) 
+        {
+            ThirdPersonCam.Priority = 10;
+            TargetCam.Priority = 0;
+        }
+        else
+        {
+            ThirdPersonCam.Priority = 0;
+            TargetCam.Priority = 10;
+        }
     }
+
     private void Rotate()
     {
-        Camera.main.transform.RotateAround(transform.position, Vector3.up, _rotateInput.x * RotationSpeed * Time.deltaTime);
 
-        if(secondCam.activeSelf == true) 
-        {
             transform.Rotate(Vector3.up, _rotateInput.x * RotationSpeed * Time.deltaTime);
-        }
     }
 
     private void Movement()
