@@ -7,7 +7,7 @@ public class TargetDetection : MonoBehaviour
     private PlayerManualTarget _playerScript;
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Enemy")
+        if (other.gameObject.tag == "Enemy" && other.gameObject.GetComponent<Enemy>().CanBeTargeted)
         {
             _playerScript.Enemies.Add(other.gameObject);
         }

@@ -6,8 +6,14 @@ using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 using Cinemachine;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using UnityEditor.Build.Content;
+using UnityEngine.UI;
 public class PlayerManualTarget : MonoBehaviour
 {
+    public int Health = 3;
+    public Text HealthText;
+
     [Header("Cameras")]
     public CinemachineVirtualCamera ThirdPersonCam;
     public CinemachineVirtualCamera TargetCam;
@@ -24,6 +30,7 @@ public class PlayerManualTarget : MonoBehaviour
     public Transform AimObject;
     public float HitForce = 13;
     public float UpForce = 6;
+    public float IsSmashingValue;
 
     [Header("Aiming")]
     public GameObject cam;
@@ -31,6 +38,12 @@ public class PlayerManualTarget : MonoBehaviour
     public GameObject currentTarget = null;
     public int currentAim = 0;
     public float TransitionDuration = 2;
+
+    [Header("Serve")]
+    public GameObject BallPrefab;
+    public float SpawnDistance = 2;
+    public int MaxBalls = 3;
+    private int _ballCounter = 0; 
 
     public List<GameObject> Enemies;
 
@@ -64,12 +77,34 @@ public class PlayerManualTarget : MonoBehaviour
             currentAim = 0;
         }
     }
+    private void OnSmash(InputValue value)
+    {
+        IsSmashingValue = value.Get<float>();
+    }
+    private void OnServe()
+    {
+        if (_ballCounter < MaxBalls)
+        {
+            GameObject Ball = Instantiate(BallPrefab, transform.position + (transform.forward * SpawnDistance), Quaternion.identity);
+            _ballCounter++;
+        }
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.gameObject.tag == "Enemy")
+        {
+            Health--;
+            HealthText.text = Health.ToString() + "/3";
+        }
+    }
     void Start()
     {
         _characterController = GetComponent<CharacterController>();
         Enemies = new List<GameObject>();
         TargetCam.Priority = 0;
 
+        HealthText.text = Health.ToString() + "/3";
     }
 
     // Update is called once per frame
@@ -105,9 +140,15 @@ public class PlayerManualTarget : MonoBehaviour
             SecondCamBehaviour();
         }
 
-
+        RestartLevel();
     }
-
+    private void RestartLevel()
+    {
+        if (Health <= 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+    }
     private void SecondCamBehaviour()
     {
         currentTarget = Enemies[currentAim];

@@ -2,8 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EnemyType
+{
+    enemy,
+    cube
+}
+
 public class Enemy : MonoBehaviour
 {
+    public EnemyType enemyType = EnemyType.enemy;
+    public bool CanBeTargeted = true;
+
+    public float velocity;
+    public LayerMask FloorLayer;
+
     public float HitForce = 15;
     public float UpForce = 10;
     public float Distance = 10;
@@ -24,9 +36,21 @@ public class Enemy : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ball")
         {
-            Health--;
-            Vector3 direction = (transform.position + (transform.forward * Distance))- transform.position;
-            collision.gameObject.GetComponent<Rigidbody>().velocity = direction.normalized * HitForce + new Vector3(0, UpForce, 0);
+            if (enemyType == EnemyType.enemy)
+            {
+                Health--;
+                Vector3 direction = (transform.position + (transform.forward * Distance)) - transform.position;
+                collision.gameObject.GetComponent<Rigidbody>().velocity = direction.normalized * HitForce + new Vector3(0, UpForce, 0);
+            }
+        }
+
+        if (enemyType == EnemyType.enemy && collision.gameObject.tag == "Enemy" && collision.gameObject.GetComponent<Enemy>().enemyType == EnemyType.cube)
+        {
+            if (collision.rigidbody.velocity.magnitude > 0)
+            {
+                _playerScript.Enemies.Remove(this.gameObject);
+                Destroy(this.gameObject);
+            }
         }
     }
     // Start is called before the first frame update
@@ -43,6 +67,20 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (enemyType == EnemyType.cube)
+        {
+            velocity = GetComponent<Rigidbody>().velocity.magnitude;
+            if (isGrounded())
+            {
+                GetComponent<Rigidbody>().isKinematic = true;
+                CanBeTargeted = false;
+            }
+            else
+            {
+                GetComponent<Rigidbody>().isKinematic = false;
+            }
+        }
+
         if (!IsCurrentTarget)
         {
             _render.sharedMaterial = _deafultMat;
@@ -69,14 +107,14 @@ public class Enemy : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (!isGrounded())
+        if (!isGrounded() && enemyType == EnemyType.enemy)
         {
             transform.position -= Vector3.up * 2 * Time.deltaTime;
         }
     }
     private void LateUpdate()
     {
-        if(isGrounded() && !PlayerTooFar()) 
+        if(isGrounded() && !PlayerTooFar() && enemyType == EnemyType.enemy) 
         {
             Vector3 targetPos =  _player.transform.position - transform.position ;
             targetPos.Normalize();
@@ -86,7 +124,7 @@ public class Enemy : MonoBehaviour
     private bool isGrounded()
     {
         Debug.DrawRay(new Vector3(transform.position.x, transform.position.y - (transform.localScale.y / 2), transform.position.z), -Vector3.up, Color.red);
-        if (Physics.Raycast(new Vector3(transform.position.x, transform.position.y - (transform.localScale.y / 2), transform.position.z), -Vector3.up, 0.4f))
+        if (Physics.Raycast(new Vector3(transform.position.x, transform.position.y - (transform.localScale.y / 2), transform.position.z), -Vector3.up, 0.4f, FloorLayer))
         {
             return true;
         }
