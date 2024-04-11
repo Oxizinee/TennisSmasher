@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum EnemyType
 {
@@ -51,6 +52,20 @@ public class Enemy : MonoBehaviour
                 _playerScript.Enemies.Remove(this.gameObject);
                 Destroy(this.gameObject);
             }
+        }
+
+       
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (enemyType == EnemyType.enemy && other.gameObject.tag == "PlayerRadius")
+        {
+            Vector3 dir = other.ClosestPoint(transform.position) - transform.position;
+            dir.Normalize();
+            _player.GetComponent<CharacterController>().Move(dir * _playerScript.PushBackStrength * Time.deltaTime);
+            _playerScript.Health--;
+            _playerScript.HealthText.text = Health.ToString() + "/3";
         }
     }
     // Start is called before the first frame update
@@ -103,8 +118,10 @@ public class Enemy : MonoBehaviour
 
         if (Health == 0)
         {
+            _playerScript.Score++;
             _playerScript.Enemies.Remove(this.gameObject);
             Destroy(gameObject);
+            _playerScript.ScoreText.text = _playerScript.Score.ToString();
         }
 
         if (!isGrounded() && enemyType == EnemyType.enemy)

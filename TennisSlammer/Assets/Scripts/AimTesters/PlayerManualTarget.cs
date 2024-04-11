@@ -9,10 +9,12 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEditor.Build.Content;
 using UnityEngine.UI;
+using UnityEngine.SocialPlatforms.Impl;
 public class PlayerManualTarget : MonoBehaviour
 {
     public int Health = 3;
     public Text HealthText;
+    public float PushBackStrength = 10;
 
     [Header("Cameras")]
     public CinemachineVirtualCamera ThirdPersonCam;
@@ -46,6 +48,9 @@ public class PlayerManualTarget : MonoBehaviour
     private int _ballCounter = 0; 
 
     public List<GameObject> Enemies;
+
+    public Text ScoreText;
+    public int Score = 0;
 
     private bool _isFocusedOnTarget;
     private Vector2 _rotateInput, _input;
@@ -90,21 +95,28 @@ public class PlayerManualTarget : MonoBehaviour
         }
     }
 
-    private void OnControllerColliderHit(ControllerColliderHit hit)
+    
+    private IEnumerator GetPushed()
     {
-        if (hit.gameObject.tag == "Enemy")
+        float t = 0;
+        while (t < 1)
         {
-            Health--;
-            HealthText.text = Health.ToString() + "/3";
+            t += Time.deltaTime;
+           transform.position = Vector3.Lerp(transform.position, new Vector3(_moveVector.x, _moveVector.y, -transform.forward.z * PushBackStrength) * Time.deltaTime,t);
         }
+
+        yield return null;
+
     }
     void Start()
     {
         _characterController = GetComponent<CharacterController>();
         Enemies = new List<GameObject>();
         TargetCam.Priority = 0;
+        ScoreText = GameObject.Find("ScoreText").GetComponent<Text>();
 
         HealthText.text = Health.ToString() + "/3";
+        ScoreText.text = Score.ToString();
     }
 
     // Update is called once per frame
@@ -203,6 +215,7 @@ public class PlayerManualTarget : MonoBehaviour
 
     private void Movement()
     {
+
         _moveVector = _inputDirection * MovementSpeed;
        // _moveVector = (transform.forward * _input.y + transform.right * _input.x) * MovementSpeed;
         _moveVector.y = _verticalVel;
