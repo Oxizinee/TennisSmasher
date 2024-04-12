@@ -24,9 +24,15 @@ public class Enemy : MonoBehaviour
     public int Health = 1;
 
     public bool IsCurrentTarget = false;
+    public bool IsStunned;
+    public float StunDuration = 5;
+    private float _stunTimer;
 
     public Material TargetMat;
+    public Material StunMat;
     public GameObject[] TargetIndicators;
+
+    public List<GameObject> EnemiesToStun;
 
     private float _timer;
     private MeshRenderer _render;
@@ -39,7 +45,18 @@ public class Enemy : MonoBehaviour
         {
             if (enemyType == EnemyType.enemy)
             {
-                Health--;
+                if (!collision.gameObject.GetComponent<Ball>().CanStun)
+                {
+                    Health--;
+                }
+                else
+                {
+                    IsStunned = true;
+                    foreach (GameObject enemy in EnemiesToStun)
+                    {
+                        enemy.GetComponent<Enemy>().IsStunned = true;
+                    }
+                }
                 Vector3 direction = (transform.position + (transform.forward * Distance)) - transform.position;
                 collision.gameObject.GetComponent<Rigidbody>().velocity = direction.normalized * HitForce + new Vector3(0, UpForce, 0);
             }
@@ -57,18 +74,6 @@ public class Enemy : MonoBehaviour
        
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (enemyType == EnemyType.enemy && other.gameObject.tag == "PlayerRadius")
-        {
-            Vector3 dir = other.ClosestPoint(transform.position) - transform.position;
-            dir.Normalize();
-            _player.GetComponent<CharacterController>().Move(dir * _playerScript.PushBackStrength * Time.deltaTime);
-            _playerScript.Health--;
-            _playerScript.HealthText.text = Health.ToString() + "/3";
-        }
-    }
-    // Start is called before the first frame update
     void Start()
     {
         _playerScript = FindObjectOfType<PlayerManualTarget>();
@@ -77,6 +82,8 @@ public class Enemy : MonoBehaviour
         _deafultMat = _render.sharedMaterial;
 
         Speed = Random.Range(2, 4);
+
+        EnemiesToStun = new List<GameObject>();
     }
 
     // Update is called once per frame
@@ -128,9 +135,28 @@ public class Enemy : MonoBehaviour
         {
             transform.position -= Vector3.up * 2 * Time.deltaTime;
         }
+
+        StunBehaviour();
     }
+
+    private void StunBehaviour()
+    {
+        if (IsStunned)
+        {
+            _stunTimer += Time.deltaTime;
+            _render.sharedMaterial = StunMat;
+            if (_stunTimer > StunDuration)
+            {
+                _stunTimer = 0;
+                IsStunned = false;
+            }
+        }
+    }
+
     private void LateUpdate()
     {
+        if (IsStunned) return;
+
         if(isGrounded() && !PlayerTooFar() && enemyType == EnemyType.enemy) 
         {
             Vector3 targetPos =  _player.transform.position - transform.position ;

@@ -32,7 +32,7 @@ public class PlayerManualTarget : MonoBehaviour
     public Transform AimObject;
     public float HitForce = 13;
     public float UpForce = 6;
-    public float IsSmashingValue;
+    public float IsSmashingValue, IsStunningSmashingValue;
 
     [Header("Aiming")]
     public GameObject cam;
@@ -85,6 +85,10 @@ public class PlayerManualTarget : MonoBehaviour
     private void OnSmash(InputValue value)
     {
         IsSmashingValue = value.Get<float>();
+    }
+    private void OnStunSmash(InputValue value)
+    {
+        IsStunningSmashingValue = value.Get<float>();
     }
     private void OnServe()
     {

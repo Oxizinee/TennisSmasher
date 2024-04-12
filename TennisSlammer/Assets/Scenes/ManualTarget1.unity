@@ -249,8 +249,12 @@ MonoBehaviour:
   Speed: 0
   Health: 1
   IsCurrentTarget: 0
+  IsStunned: 0
+  StunDuration: 2
   TargetMat: {fileID: 2100000, guid: 72000b1e1531797418dd6b954ee416f5, type: 2}
+  StunMat: {fileID: 0}
   TargetIndicators: []
+  EnemiesToStun: []
 --- !u!54 &112095738
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -852,8 +856,12 @@ MonoBehaviour:
   Speed: 0
   Health: 1
   IsCurrentTarget: 0
+  IsStunned: 0
+  StunDuration: 2
   TargetMat: {fileID: 2100000, guid: 72000b1e1531797418dd6b954ee416f5, type: 2}
+  StunMat: {fileID: 0}
   TargetIndicators: []
+  EnemiesToStun: []
 --- !u!1 &230751103 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1453728921762698170, guid: 0387cf87758f93a47ad3ab2f40992531, type: 3}
@@ -1287,6 +1295,7 @@ MonoBehaviour:
   HitForce: 13
   UpForce: 6
   IsSmashingValue: 0
+  IsStunningSmashingValue: 0
   cam: {fileID: 924330564}
   layerMask:
     serializedVersion: 2
@@ -1318,7 +1327,7 @@ GameObject:
   - component: {fileID: 532803007}
   - component: {fileID: 532803006}
   - component: {fileID: 532803005}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1471,8 +1480,12 @@ MonoBehaviour:
   Speed: 0
   Health: 1
   IsCurrentTarget: 0
+  IsStunned: 0
+  StunDuration: 2
   TargetMat: {fileID: 2100000, guid: 72000b1e1531797418dd6b954ee416f5, type: 2}
+  StunMat: {fileID: 0}
   TargetIndicators: []
+  EnemiesToStun: []
 --- !u!54 &537496682
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2019,8 +2032,12 @@ MonoBehaviour:
   Speed: 0
   Health: 1
   IsCurrentTarget: 0
+  IsStunned: 0
+  StunDuration: 2
   TargetMat: {fileID: 2100000, guid: 72000b1e1531797418dd6b954ee416f5, type: 2}
+  StunMat: {fileID: 0}
   TargetIndicators: []
+  EnemiesToStun: []
 --- !u!54 &690576870
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2273,8 +2290,12 @@ MonoBehaviour:
   Speed: 0
   Health: 1
   IsCurrentTarget: 0
+  IsStunned: 0
+  StunDuration: 2
   TargetMat: {fileID: 2100000, guid: 72000b1e1531797418dd6b954ee416f5, type: 2}
+  StunMat: {fileID: 0}
   TargetIndicators: []
+  EnemiesToStun: []
 --- !u!54 &732045023
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2559,8 +2580,12 @@ MonoBehaviour:
   Speed: 0
   Health: 1
   IsCurrentTarget: 0
+  IsStunned: 0
+  StunDuration: 2
   TargetMat: {fileID: 2100000, guid: 72000b1e1531797418dd6b954ee416f5, type: 2}
+  StunMat: {fileID: 0}
   TargetIndicators: []
+  EnemiesToStun: []
 --- !u!54 &868147884
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3060,7 +3085,7 @@ GameObject:
   - component: {fileID: 1151008400}
   - component: {fileID: 1151008399}
   - component: {fileID: 1151008398}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3165,7 +3190,7 @@ GameObject:
   - component: {fileID: 1168345568}
   - component: {fileID: 1168345567}
   - component: {fileID: 1168345566}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3270,6 +3295,7 @@ GameObject:
   - component: {fileID: 1181826502}
   - component: {fileID: 1181826501}
   - component: {fileID: 1181826500}
+  - component: {fileID: 1181826503}
   m_Layer: 0
   m_Name: PlayerRadius
   m_TagString: PlayerRadius
@@ -3365,6 +3391,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1181826498}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1181826503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1181826498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76a564efc67cae046ab71c1cb55310c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1189745226
 GameObject:
   m_ObjectHideFlags: 0
@@ -3863,8 +3901,12 @@ MonoBehaviour:
   Speed: 0
   Health: 1
   IsCurrentTarget: 0
+  IsStunned: 0
+  StunDuration: 2
   TargetMat: {fileID: 2100000, guid: 72000b1e1531797418dd6b954ee416f5, type: 2}
+  StunMat: {fileID: 0}
   TargetIndicators: []
+  EnemiesToStun: []
 --- !u!54 &1352365947
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4028,9 +4070,9 @@ MonoBehaviour:
   CameraDistance: 2.03
   CameraCollisionFilter:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   IgnoreTag: 
-  CameraRadius: 0.587
+  CameraRadius: 0.279
   DampingIntoCollision: 0
   DampingFromCollision: 2
 --- !u!114 &1354360375
@@ -4218,8 +4260,12 @@ MonoBehaviour:
   Speed: 0
   Health: 1
   IsCurrentTarget: 0
+  IsStunned: 0
+  StunDuration: 2
   TargetMat: {fileID: 2100000, guid: 72000b1e1531797418dd6b954ee416f5, type: 2}
+  StunMat: {fileID: 0}
   TargetIndicators: []
+  EnemiesToStun: []
 --- !u!1 &1430805229
 GameObject:
   m_ObjectHideFlags: 0
@@ -4326,7 +4372,7 @@ MonoBehaviour:
   CameraDistance: 3.11
   CameraCollisionFilter:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   IgnoreTag: 
   CameraRadius: 0.2
   DampingIntoCollision: 0
@@ -4858,7 +4904,7 @@ GameObject:
   - component: {fileID: 2105357490}
   - component: {fileID: 2105357489}
   - component: {fileID: 2105357488}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
