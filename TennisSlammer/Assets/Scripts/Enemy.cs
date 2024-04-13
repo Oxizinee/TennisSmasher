@@ -127,6 +127,8 @@ public class Enemy : MonoBehaviour
         {
             _playerScript.Score++;
             _playerScript.Enemies.Remove(this.gameObject);
+            _playerScript.IncreaseSpeed(10);
+
             Destroy(gameObject);
             _playerScript.ScoreText.text = _playerScript.Score.ToString();
         }

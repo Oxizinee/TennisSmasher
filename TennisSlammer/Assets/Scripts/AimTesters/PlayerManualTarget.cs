@@ -26,6 +26,7 @@ public class PlayerManualTarget : MonoBehaviour
     public float MovementSpeed = 17;
     public float RotationSpeed = 160;
     public float JumpHeight = 5;
+    public float SpeedBostDuration = 3;
 
     [Header("Ball Hitting")]
     public Transform AimPos;
@@ -55,7 +56,7 @@ public class PlayerManualTarget : MonoBehaviour
     private bool _isFocusedOnTarget;
     private Vector2 _rotateInput, _input;
     private Vector3 _moveVector, _inputDirection;
-    private float _verticalVel, _gravity = 12, _isJumpingValue;
+    private float _verticalVel, _gravity = 12, _isJumpingValue, _originalSpeed, _speedBostTimer;
     private CharacterController _characterController;
     private void OnRotate(InputValue value)
     {
@@ -99,19 +100,6 @@ public class PlayerManualTarget : MonoBehaviour
         }
     }
 
-    
-    private IEnumerator GetPushed()
-    {
-        float t = 0;
-        while (t < 1)
-        {
-            t += Time.deltaTime;
-           transform.position = Vector3.Lerp(transform.position, new Vector3(_moveVector.x, _moveVector.y, -transform.forward.z * PushBackStrength) * Time.deltaTime,t);
-        }
-
-        yield return null;
-
-    }
     void Start()
     {
         _characterController = GetComponent<CharacterController>();
@@ -121,6 +109,8 @@ public class PlayerManualTarget : MonoBehaviour
 
         HealthText.text = Health.ToString() + "/3";
         ScoreText.text = Score.ToString();
+
+        _originalSpeed = MovementSpeed;
     }
 
     // Update is called once per frame
@@ -156,6 +146,7 @@ public class PlayerManualTarget : MonoBehaviour
             SecondCamBehaviour();
         }
 
+        BringTheSpeedBack();
         RestartLevel();
     }
     private void RestartLevel()
@@ -240,4 +231,23 @@ public class PlayerManualTarget : MonoBehaviour
         _characterController.Move(_moveVector * Time.deltaTime);
     }
 
+    public void IncreaseSpeed(float moreSpeed)
+    {
+        float newSpeed = MovementSpeed + moreSpeed;
+
+        MovementSpeed = newSpeed;
+    }
+
+    private void BringTheSpeedBack()
+    {
+        if(MovementSpeed != _originalSpeed) 
+        {
+            _speedBostTimer += Time.deltaTime;
+            if(_speedBostTimer > SpeedBostDuration) 
+            {
+                MovementSpeed = _originalSpeed;
+                _speedBostTimer = 0;
+            }
+        }
+    }
 }

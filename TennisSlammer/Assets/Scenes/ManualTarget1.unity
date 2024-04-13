@@ -1290,6 +1290,7 @@ MonoBehaviour:
   MovementSpeed: 17
   RotationSpeed: 160
   JumpHeight: 8
+  SpeedBostDuration: 5
   AimPos: {fileID: 0}
   AimObject: {fileID: 1482926494}
   HitForce: 13
