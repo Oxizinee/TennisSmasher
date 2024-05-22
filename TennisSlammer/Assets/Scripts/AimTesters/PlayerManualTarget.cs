@@ -1,15 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 using Cinemachine;
-using System.Linq;
 using UnityEngine.SceneManagement;
-using UnityEditor.Build.Content;
 using UnityEngine.UI;
-using UnityEngine.SocialPlatforms.Impl;
 public class PlayerManualTarget : MonoBehaviour
 {
     public int Health = 3;
